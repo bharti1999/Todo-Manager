@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <link rel='stylesheet' type='text/css' media='screen' href='style.css'>
+    </head>
+    <body id="body">
+
+        <header>Todo Manager</header>
+        <form>
+            <div id="firstContainer">
+                <input type="text" name="title" id="title" placeholder="title" required>
+                <input type="text" name="description" id="description" placeholder="description">
+                <input type="date" name="date" id="dueDate" placeholder="YYYY-MM-DD" required>
+            </div>
+
+            <div id="secondContainer">
+                <!-- <div class="secondInnerContainer">
+                    <input type="checkbox" name ="status" id="status">
+                    <label for="status" >Status</label>
+                </div> -->
+                <div class="secondInnerContainer">
+                    <label>Priority :: </label>
+                    <input type="radio" id="high" name="priority" value="100" class="priority">
+                    <label for="high" >High</label>
+                    <input type="radio" id="medium" name="priority" value="50" class="priority" checked>
+                    <label for="medium" >Medium</label>
+                    <input type="radio" id="low" name="priority" value="0" class="priority">
+                    <label for="low" >Low</label>
+                </div>
+            </div>
+            
+            <button type="submit" id="submit">Submit</button>
+
+        </form>
+
+            <div id="thirdContainer">
+                <label>Sort By :: </label>
+                <button id="set">Priority</button>
+                <button id="setdate">Date Desc</button>
+                <button id="setdateasc">Date ASC</button>
+            </div>
+            <br>
+            <ul id="list">
+        
+            </ul>
+       
+        <script src='script.js'></script>
+    </body>
+</html>
