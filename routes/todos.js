@@ -50,16 +50,33 @@ route.post('/' , async (req,res)=>{
 })
 
 route.patch('/:id', async (req,res)=>{
-    console.log(req.body.id);
-    console.log(req.body.date);
-    console.log("inside"+req.body.id);
+    console.log("patch"+req.body.id);
+    console.log("date"+req.body.date)
+    console.log("priority"+req.body.priority);
 
     const element = await Todos.findOne({
-        where : {id : req.params.id}
+        where : {id : req.body.id}
     })
+    //let priority = 1000;
+
+    if(req.body.priority ==="low"){
+         req.body.priority = 0;
+    }else if(req.body.priority === "medium"){
+         req.body.priority = 50;
+    }else{
+         req.body.priority = 100;
+    }
+
+//console.log(priority)
+
     element.due = req.body.date;
+    element.priority = req.body.priority;
+   // element.priority = priority;
     await element.save();
     res.status(201).send({ success : 'new task added '})
 })
+
+
+
 
 module.exports= route;

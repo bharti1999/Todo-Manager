@@ -1,3 +1,4 @@
+"use strict";
 let body = document.getElementById("body");
 let title = document.getElementById("title");
 let description = document.getElementById("description");
@@ -16,7 +17,7 @@ var listchangedate="";
 body.onload= async function(){
     const resp = await fetch('/todos' , {method : 'GET'})
     const todos = await resp.json();
-
+  //  console.log(todos.length)
     for(let i=0;i<todos.length;i++){
         await appendToList(todos[i]);
     } 
@@ -108,52 +109,44 @@ async function appendToList(todos){
         listitem.setAttribute("id",todos.id);
 
         let  div = document.createElement("div");
+         //debugger
+        let liststatus = document.createElement("button");
+        liststatus.setAttribute("id","liststatus"+todos.id);
+        //liststatus.type="checkbox";
+        liststatus.setAttribute("onclick","updateDatePriorityStatus(this)");
+        //console.log(liststatus)
+
         let listtitle = document.createElement("p");
         listtitle.innerHTML=todos.title;
+
         let listdescription = document.createElement("p");
         listdescription.innerHTML= todos.description;
-        //debugger
+       
         let listduedate = document.createElement("input");
-        //listduedate.setAttribute("id","listdue"+todos.id);
         listduedate.id = "listdue"+todos.id;
-        console.log(listduedate)
-        // let i=document.getElementById("listdue"+todos.id);
-        
-        // i.value="aaa";
-        //console.log(`hiiiii5 ${listduedate.value}`);
-        //listduedate.setAttribute("type","date");
-        //listduedate.setAttribute("value",todos.due);
-        //
-        //listduedate.innerHTML=todos.due;
-        console.log(todos.due);
-        console.log(listduedate);
-        //listduedate.value="${todos.due}";
+        listduedate.setAttribute("type","date");
         listduedate.value=todos.due;
-        //console.log(`hiiiii ${listduedate.value}`);
+
         listchangedate = document.createElement("button");
         listchangedate.innerHTML="Change Date";
-        listchangedate.setAttribute("value",listduedate.value);
-        //console.log(`hiiiii2 ${listduedate.value}`);
         listchangedate.setAttribute("id",todos.id);
-        listchangedate.setAttribute("onclick","updateDate(this)");
-        //console.log(listchangedate);
-        //listchangedate.onclick = updateDate(listduedate);
+        listchangedate.setAttribute("onclick","updateDatePriorityStatus(this)");
+
         let listpriority = document.createElement("input");
-        listpriority.setAttribute("value",setpriority);
+        listpriority.id = "priority"+todos.id; 
+
+        //listpriority.setAttribute("value",setpriority);
         let listchangepriority = document.createElement("button");
         listchangepriority.innerHTML="Change Priority";
+        listchangepriority.setAttribute("id",todos.id);
+        listchangepriority.setAttribute("onclick","updateDatePriorityStatus(this)");
 
-        //console.log(`hiiiii3 ${listduedate.value}`);
-        div.innerHTML += listtitle.outerHTML + listdescription.outerHTML + listduedate.outerHTML + listchangedate.outerHTML
+        div.innerHTML += liststatus.outerHTML+ listtitle.outerHTML + listdescription.outerHTML + listduedate.outerHTML + listchangedate.outerHTML
         + listpriority.outerHTML + listchangepriority.outerHTML; 
-        //console.log(`hiiiii4 ${listduedate.value}`);
-        //console.log(div);
         // listitem.innerHTML = "id : " + todos.id + "  title : " +listtitle.innerHTML +  "  description : " +listdescription.innerHTML
         // + " due : " + todos.due + " status : " + todos.status + " priority : " + setpriority;
         listitem.appendChild(div); 
-        list.appendChild(listitem);
-        
-        //await expandList(listitem);    
+        list.appendChild(listitem);   
 }
 
 async function expandList(list){
@@ -171,38 +164,60 @@ async function expandList(list){
             div.appendChild(inputnote);
             div.appendChild(addNoteButton);
             div.appendChild(addNoteButton);
-
+            
+            getNotes(list.children[i].id);
+            
             if(list.children[i].childNodes.length==1){
-                list.children[i].appendChild(div); 
-                addNoteButton.onclick = function(){
-                    let inputVal = inputnote.value;
-                    let newNote = document.createElement("li");
-                    newNote.innerHTML = inputVal;
-                    div.appendChild(newNote);
+                list.children[i].appendChild(div);    
+                addNoteButton.onclick =  function(){
+                    if(inputnote.value !=""){
+                        let inputVal = inputnote.value;
+                        let newNote = document.createElement("li");
+                        newNote.innerHTML = inputVal;
+                        div.appendChild(newNote);
+                        addNote(list.children[i].id ,inputnote.value);
+                }
                 }
             }   
         };
     }
 }
 
-
-
-async function updateDate(elem){
-    console.log(document.getElementById("listdue1").value);
-   console.log(elem.id+" " +elem.value);
-//    console.log(elem.value);
-    // const resp = await modifyDateInDB(elem.id , elem.value);
-    // const todos = await resp.json();
-    // console.log("taken" + todos)
+async function updateDatePriorityStatus(elem){
+     console.log(document.getElementById("liststatus"+elem.id));
+     console.log("whdbwhebchbe")
+    // let date = document.getElementById("listdue"+elem.id).value
+    // let priority = document.getElementById("priority"+elem.id).value
+    // let priority = document.getElementById("priority"+elem.id).checked;
+    //const resp =  await modifyDatePriorityStatusInDB(elem.id , date , priority);
+    //const todos =  await resp.json();
 }
 
-async function modifyDateInDB(id , date ){
+async function modifyDatePriorityStatusInDB(id , date , priority ){
     const resp = await fetch('/todos/id',{
         method : 'PATCH' ,
         headers :{
             'Content-Type' : 'application/json'
         },
-        body : JSON.stringify({id,date})
+        body : JSON.stringify({id,date , priority})
+    })
+    return resp.json();
+}
+async function getNotes(id){
+  
+    const resp = await fetch('/todos/:id/notes' ,{ method : 'GET'})
+    const notes = await resp.json();
+   // console.log(notes.length);
+    return notes;
+}
+
+async function addNote(id , note){
+    const resp = await fetch('/todos/:id/notes',{
+        method : 'POST' ,
+        headers :{
+            'Content-Type' : 'application/json'
+        },
+        body : JSON.stringify({id, note})
     })
     return resp.json();
 }

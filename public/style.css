@@ -27,7 +27,7 @@ form{
     display: flex;
 }
 .secondInnerContainer{
-    width: 30%;
+    width: 100%;
 }
 input{
     border: none;
