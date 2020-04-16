@@ -116,14 +116,10 @@ async function appendToList(todos){
         let liststatus = document.createElement("input");
         liststatus.setAttribute("id",+todos.id);
         liststatus.type="checkbox";
-        
-console.log(liststatus);
 
         if(todos.status==="incomplete"){
-            console.log(todos.status);
             liststatus.checked = true;
         }else{
-            console.log(todos.status);
             liststatus.checked = false;
         }
         liststatus.setAttribute("onclick","updateDatePriorityStatus(this)");
@@ -134,6 +130,10 @@ console.log(liststatus);
         let listdescription = document.createElement("p");
         listdescription.innerHTML= todos.description;
        
+        let getDueDate = document.createElement("label");
+        getDueDate.innerHTML= todos.due;
+        getDueDate.id = "dateLabel";
+
         let listduedate = document.createElement("input");
         listduedate.id = "listdue"+todos.id;
         listduedate.setAttribute("type","date");
@@ -144,6 +144,12 @@ console.log(liststatus);
         listchangedate.setAttribute("id",todos.id);
         listchangedate.setAttribute("onclick","updateDatePriorityStatus(this)");
 
+        let linebreak = document.createElement("br");
+
+        let listPriority = document.createElement("lable");
+        listPriority.innerHTML= setpriority;
+        listPriority.id = "priorityLabel";
+
         let listpriority = document.createElement("input");
         listpriority.id = "priority"+todos.id; 
 
@@ -152,10 +158,10 @@ console.log(liststatus);
         listchangepriority.setAttribute("id",todos.id);
         listchangepriority.setAttribute("onclick","updateDatePriorityStatus(this)");
 
-        div.innerHTML += liststatus.outerHTML+ listtitle.outerHTML + listdescription.outerHTML + listduedate.outerHTML + listchangedate.outerHTML
-        + listpriority.outerHTML + listchangepriority.outerHTML; 
-        // listitem.innerHTML = "id : " + todos.id + "  title : " +listtitle.innerHTML +  "  description : " +listdescription.innerHTML
-        // + " due : " + todos.due + " status : " + todos.status + " priority : " + setpriority;
+        div.innerHTML += liststatus.outerHTML+ listtitle.outerHTML + listdescription.outerHTML +
+        getDueDate.outerHTML +listduedate.outerHTML + listchangedate.outerHTML +linebreak.outerHTML +
+        linebreak.outerHTML + listPriority.outerHTML+ listpriority.outerHTML + listchangepriority.outerHTML; 
+     
         listitem.appendChild(div); 
         list.appendChild(listitem);   
 }
@@ -197,9 +203,24 @@ async function updateDatePriorityStatus(elem){
     let date = document.getElementById("listdue"+elem.id).value
     let priority = document.getElementById("priority"+elem.id).value
     let status = elem.checked;
-    console.log(date +"--"+priority+"--"+status);
+
     const resp =  await modifyDatePriorityStatusInDB(elem.id , date , priority,status);
-    //const todos =  await resp.json();
+
+    const  response = await fetch( `todos/${elem.id}` , {method : 'GET'})
+    const todos = await response.json();
+    document.getElementById("dateLabel").innerHTML = todos.due;
+
+    if(todos.priority=="100"){
+        setpriority = "high";
+    };
+    if(todos.priority=="50"){
+        setpriority = "medium";
+    };
+    if(todos.priority=="0"){
+        setpriority = "low";
+    };
+    document.getElementById("priorityLabel").innerHTML = setpriority;
+
 }
 
 async function modifyDatePriorityStatusInDB(id , date , priority ,status){
@@ -210,7 +231,6 @@ async function modifyDatePriorityStatusInDB(id , date , priority ,status){
         },
         body : JSON.stringify({id , date , priority , status})
     })
-    return resp.json();
 }
 async function getNotes(id){
   
