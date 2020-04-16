@@ -31,5 +31,14 @@ route.get('/duedateasc' , async (req,res)=>{
     });
     return res.send(todos);
 })
+route.get('/status' , async (req,res)=>{
+    const todos = await Todos.findAll({
+        attributes : ['id' , 'title', 'description' , 'due' , 'status', 'priority'] ,
+        order : [
+            [ 'status' , 'ASC'] ,
+        ]     
+    });
+    return res.send(todos);
+})
 
 module.exports= route;

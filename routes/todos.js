@@ -53,7 +53,7 @@ route.patch('/:id', async (req,res)=>{
     console.log("patch"+req.body.id);
     console.log("date"+req.body.date)
     console.log("priority"+req.body.priority);
-
+    console.log("status"+req.body.status);
     const element = await Todos.findOne({
         where : {id : req.body.id}
     })
@@ -67,11 +67,17 @@ route.patch('/:id', async (req,res)=>{
          req.body.priority = 100;
     }
 
-//console.log(priority)
+    if(req.body.status === true){
+        req.body.status = "complete";
+    }else{
+        req.body.status = incomplete;
+    }
+
+console.log(req.body.status);
 
     element.due = req.body.date;
     element.priority = req.body.priority;
-   // element.priority = priority;
+    element.status = req.body.status;
     await element.save();
     res.status(201).send({ success : 'new task added '})
 })
