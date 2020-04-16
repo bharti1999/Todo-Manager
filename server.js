@@ -5,10 +5,8 @@ const todoRoute = require('./routes/todos');
 const sort = require('./routes/sort');
 const notes =require('./routes/notes')
 const app = express();
-//const port=process.env.PORT||3000
-// "engines": {
-//     "node": "12.16.1"
-//   },
+const port=process.env.PORT||3000;
+
 
 app.use(express.urlencoded({extended : true}));
 app.use(express.json());
@@ -21,7 +19,7 @@ app.use('/todos',notes);
 
 db.sync()
     .then( () => {
-        app.listen(3000);
+        app.listen(port);
     })
     .catch((err) => {
         console.error(err);
