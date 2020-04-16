@@ -6,6 +6,9 @@ const sort = require('./routes/sort');
 const notes =require('./routes/notes')
 const app = express();
 //const port=process.env.PORT||3000
+// "engines": {
+//     "node": "12.16.1"
+//   },
 
 app.use(express.urlencoded({extended : true}));
 app.use(express.json());

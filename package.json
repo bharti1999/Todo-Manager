@@ -3,12 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "engines": {
-    "node" : "12.16.1"
-  },
+ 
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"node server.js"
+    "start": "node server.js"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +15,5 @@
     "python": "0.0.4",
     "sequelize": "^5.21.6",
     "sqlite3": "^4.1.1"
-  
   }
 }
