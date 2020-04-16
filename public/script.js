@@ -7,9 +7,9 @@ let priority = document.getElementsByClassName("priority");
 let set = document.getElementById("set");
 let setdate  = document.getElementById("setdate");
 let setdateasc  = document.getElementById("setdateasc");
+let setstatus = document.getElementById("setstatus");
 let submit = document.getElementById("submit");
 let list = document.getElementById("list");
-let secondlist = document.getElementById("secondlist");
 let determinedPriority="";
 let setpriority ="";
 var listchangedate="";
@@ -17,7 +17,7 @@ var listchangedate="";
 body.onload= async function(){
     const resp = await fetch('/todos' , {method : 'GET'})
     const todos = await resp.json();
-  //  console.log(todos.length)
+
     for(let i=0;i<todos.length;i++){
         await appendToList(todos[i]);
     } 
@@ -30,8 +30,6 @@ submit.onclick= async function(){
             determinedPriority =  priority[i].value
         }
     }
-    //event.preventDefault();
-    //console.log(due.value);
     await addNewTodoJSON(title.value , description.value , due.value , 0 ,determinedPriority );
     let newTodo = await getNewTodo();
     await appendToList(newTodo);
@@ -82,8 +80,13 @@ setdateasc.onclick = async function sortByDueDateASC(){
     }
 }
 
-async function sortByStatusItoC(){
-
+setstatus.onclick = async function sortByStatusItoC(){
+    const resp = await fetch('/sort/status',{method : 'GET'})
+    const todos = await resp.json();
+    await removelistItems(list.childElementCount);
+    for(let i=0;i<todos.length;i++){
+        await appendToList(todos[i]);
+    }
 }
 
 async function removelistItems(length){
@@ -109,10 +112,20 @@ async function appendToList(todos){
         listitem.setAttribute("id",todos.id);
 
         let  div = document.createElement("div");
-         //debugger
+
         let liststatus = document.createElement("input");
         liststatus.setAttribute("id",+todos.id);
         liststatus.type="checkbox";
+        
+console.log(liststatus);
+
+        if(todos.status==="incomplete"){
+            console.log(todos.status);
+            liststatus.checked = true;
+        }else{
+            console.log(todos.status);
+            liststatus.checked = false;
+        }
         liststatus.setAttribute("onclick","updateDatePriorityStatus(this)");
 
         let listtitle = document.createElement("p");
@@ -134,7 +147,6 @@ async function appendToList(todos){
         let listpriority = document.createElement("input");
         listpriority.id = "priority"+todos.id; 
 
-        //listpriority.setAttribute("value",setpriority);
         let listchangepriority = document.createElement("button");
         listchangepriority.innerHTML="Change Priority";
         listchangepriority.setAttribute("id",todos.id);
@@ -163,12 +175,7 @@ async function expandList(list){
             div.appendChild(inputnote);
             div.appendChild(addNoteButton);
             div.appendChild(addNoteButton);
-            //debugger
-           
-            //const notes =   resp.json();
-            //console.log(resp);
-            //console.log(notes.length);
-
+    
             if(list.children[i].childNodes.length==1){
                 getNotes(list.children[i].id);
                 list.children[i].appendChild(div);    
@@ -190,13 +197,13 @@ async function updateDatePriorityStatus(elem){
     let date = document.getElementById("listdue"+elem.id).value
     let priority = document.getElementById("priority"+elem.id).value
     let status = elem.checked;
-    console.log(date +"-- "+priority+" --"+status);
+    console.log(date +"--"+priority+"--"+status);
     const resp =  await modifyDatePriorityStatusInDB(elem.id , date , priority,status);
     //const todos =  await resp.json();
 }
 
 async function modifyDatePriorityStatusInDB(id , date , priority ,status){
-    const resp = await fetch('/todos/id',{
+    const resp = await fetch(`/todos/${id}`,{
         method : 'PATCH' ,
         headers :{
             'Content-Type' : 'application/json'
@@ -214,8 +221,7 @@ async function getNotes(id){
          item.innerHTML = notes[i].notes;
          document.getElementById(id).appendChild(item);
     }
-    //console.log(document.getElementById(id))
-    //return notes;
+ 
 }
 
 async function addNote(id , note){

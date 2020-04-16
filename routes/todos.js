@@ -8,25 +8,6 @@ route.get('/' , async (req,res)=>{
     res.send(todos);
 })
 
-// route.get('/:id' , async (req,res)=>{
-
-//     if(isNaN(Number(req.params.id))){
-//         return res.status(404).send({
-//                 error :  "Invalid todo id"
-//             })
-//     }
-
-//    const todo = await Todos.findByPk(req.params.id); 
-
-//     if(!todo){
-//         res.status(400).send({
-//             error : "No todo found for the id = " + req.params.id
-//         })
-//         return;
-//     }
-//     res.send(todo);
-// })
-
 route.post('/' , async (req,res)=>{
 
     if(typeof req.body.title != "string"){
@@ -50,36 +31,34 @@ route.post('/' , async (req,res)=>{
 })
 
 route.patch('/:id', async (req,res)=>{
-    console.log("patch"+req.body.id);
-    console.log("date"+req.body.date)
-    console.log("priority"+req.body.priority);
-    console.log("status"+req.body.status);
     const element = await Todos.findOne({
-        where : {id : req.body.id}
+        where : {id : req.params.id}
     })
-    //let priority = 1000;
 
-    if(req.body.priority ==="low"){
-         req.body.priority = 0;
-    }else if(req.body.priority === "medium"){
-         req.body.priority = 50;
-    }else{
-         req.body.priority = 100;
+    if(req.body.status === undefined){
+        if(req.body.priority === "low" && req.body.status === undefined){
+            req.body.priority = 0;
+            element.priority = req.body.priority;
+        }else if(req.body.priority === "medium" && req.body.status === undefined){
+            req.body.priority = 50;
+            element.priority = req.body.priority;
+        }else if(req.body.priority === "high" && req.body.status === undefined){
+            req.body.priority = 100;
+            element.priority = req.body.priority;
+        }
+        else{
+            element.due = req.body.date;
+        }
     }
-
     if(req.body.status === true){
         req.body.status = "complete";
+        element.status = req.body.status;
     }else{
-        req.body.status = incomplete;
+        req.body.status = "incomplete";
+        element.status = req.body.status;
     }
-
-console.log(req.body.status);
-
-    element.due = req.body.date;
-    element.priority = req.body.priority;
-    element.status = req.body.status;
-    await element.save();
-    res.status(201).send({ success : 'new task added '})
+     await element.save();
+    res.status(201).send({  success : 'new task added ' , data : element });
 })
 
 

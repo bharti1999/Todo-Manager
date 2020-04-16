@@ -35,7 +35,7 @@ route.get('/status' , async (req,res)=>{
     const todos = await Todos.findAll({
         attributes : ['id' , 'title', 'description' , 'due' , 'status', 'priority'] ,
         order : [
-            [ 'status' , 'ASC'] ,
+            [ 'status' , 'DESC'] ,
         ]     
     });
     return res.send(todos);
