@@ -27,7 +27,7 @@ db.sync()
 
 notesdb.sync()
     .then( () => {
-        app.listen(3001);
+        app.listen(port);
     })
     .catch((err) => {
         console.error(err);
